@@ -59,7 +59,7 @@
         }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen font-sans flex flex-col">
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans flex flex-col pb-20 lg:pb-0">
 
     <!-- Header / Navbar -->
     <header class="border-b border-slate-800 bg-slate-950/70 backdrop-blur sticky top-0 z-50">
@@ -82,8 +82,8 @@
     <!-- Main Workspace -->
     <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-8">
         
-        <!-- LEFT COLUMN: Control Panel -->
-        <section class="lg:col-span-5 flex flex-col gap-6 overflow-y-auto">
+        <!-- LEFT COLUMN: Control Panel (Step 1 & Step 2) -->
+        <section class="lg:col-span-5 flex flex-col gap-6 overflow-y-auto order-1 lg:order-1">
             
             <!-- Step 1: Upload Photos -->
             <div class="bg-slate-800/50 border border-slate-700/60 rounded-2xl p-5 space-y-4">
@@ -294,18 +294,15 @@
                 </div>
             </div>
 
-            <!-- Download Button -->
-            <button onclick="downloadStrip()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 transition-all active:scale-[0.99]">
+            <!-- Desktop Download Button -->
+            <button onclick="downloadStrip()" class="hidden lg:flex w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-indigo-600/30 items-center justify-center gap-2 transition-all active:scale-[0.99]">
                 <i data-lucide="download" class="w-5 h-5"></i>
                 Download High-Res Strip
             </button>
         </section>
 
-        <!-- RIGHT COLUMN: Live Interactive Canvas Preview -->
-        <section class="lg:col-span-7 bg-slate-950 border border-slate-800 rounded-2xl p-6 flex flex-col items-center justify-center min-h-[600px] relative overflow-hidden">
-            <div class="absolute top-4 left-4 text-xs font-medium text-slate-500 uppercase tracking-wider flex items-center gap-1.5 z-10">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Live Preview (Drag stamp anywhere!)
-            </div>
+        <!-- RIGHT COLUMN: Live Interactive Canvas Preview (Section 2 on Mobile) -->
+        <section class="lg:col-span-7 bg-slate-950 border border-slate-800 rounded-2xl p-6 flex flex-col items-center justify-center min-h-[550px] relative overflow-hidden order-2 lg:order-2">
 
             <!-- Photobooth Outer Strip Wrapper -->
             <div id="photostrip-wrapper" class="flex items-stretch photostrip-shadow rounded overflow-hidden relative">
@@ -353,7 +350,16 @@
                 <div id="sprockets-right" class="hidden bg-black px-2 py-4 flex flex-col justify-between items-center border-l border-slate-800"></div>
             </div>
         </section>
+
     </main>
+
+    <!-- Mobile Fixed Sticky Bottom Download Bar -->
+    <div class="lg:hidden fixed bottom-0 left-0 right-0 p-3 bg-slate-950/90 backdrop-blur border-t border-slate-800 z-50">
+        <button onclick="downloadStrip()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-xl shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 active:scale-[0.99]">
+            <i data-lucide="download" class="w-5 h-5"></i>
+            Download Photo Strip
+        </button>
+    </div>
 
     <!-- App Engine JavaScript -->
     <script>
