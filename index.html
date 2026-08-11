@@ -194,9 +194,9 @@
                         <div class="space-y-1">
                             <div class="flex justify-between text-[10px] text-slate-400">
                                 <span>Rotate</span>
-                                <span id="angle-val">-30°</span>
+                                <span id="angle-val">-15°</span>
                             </div>
-                            <input type="range" min="-180" max="180" value="-30" oninput="updateState('stampRotation', parseInt(this.value))" class="w-full accent-indigo-500 h-1.5 bg-slate-700 rounded cursor-pointer">
+                            <input type="range" min="-180" max="180" value="-15" oninput="updateState('stampRotation', parseInt(this.value))" class="w-full accent-indigo-500 h-1.5 bg-slate-700 rounded cursor-pointer">
                         </div>
 
                         <div class="space-y-1">
@@ -223,7 +223,7 @@
                 <div class="space-y-2">
                     <label class="text-xs font-medium text-slate-400 uppercase tracking-wider">Photo Filter</label>
                     <div class="grid grid-cols-3 gap-2 text-xs">
-                        <button onclick="updateState('filter', 'none')" class="py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200">Normal</button>
+                        <button onclick="updateState('filter', 'none')" class="py-2 rounded-lg bg-indigo-600 text-white font-medium text-center border border-indigo-500">Normal</button>
                         <button onclick="updateState('filter', 'filter-bw')" class="py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200">B&W Noir</button>
                         <button onclick="updateState('filter', 'filter-sepia')" class="py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200">Vintage</button>
                         <button onclick="updateState('filter', 'filter-warm')" class="py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200">Warm</button>
@@ -256,7 +256,7 @@
                     <!-- Free Text Input for Frame Description -->
                     <div class="space-y-1">
                         <span class="text-[11px] text-slate-400">Frame Description Text</span>
-                        <input type="text" id="desc-input" oninput="updateState('description', this.value)" placeholder="e.g. PHOTOBOOTH, VACATION..." value="SEA" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-indigo-500">
+                        <input type="text" id="desc-input" oninput="updateState('description', this.value)" placeholder="e.g. PHOTOBOOTH, VACATION..." value="PHOTOBOOTH" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-indigo-500">
                     </div>
 
                     <!-- Date Input -->
@@ -270,21 +270,21 @@
                         <div class="space-y-1">
                             <div class="flex justify-between text-[10px] text-slate-400">
                                 <span>Description Size</span>
-                                <span id="desc-size-val">12px</span>
+                                <span id="desc-size-val">14px</span>
                             </div>
-                            <input type="range" min="12" max="36" value="12" oninput="updateState('descFontSize', parseInt(this.value))" class="w-full accent-indigo-500 h-1.5 bg-slate-700 rounded cursor-pointer">
+                            <input type="range" min="12" max="36" value="14" oninput="updateState('descFontSize', parseInt(this.value))" class="w-full accent-indigo-500 h-1.5 bg-slate-700 rounded cursor-pointer">
                         </div>
 
                         <div class="space-y-1">
                             <div class="flex justify-between text-[10px] text-slate-400">
                                 <span>Date Size</span>
-                                <span id="date-size-val">10px</span>
+                                <span id="date-size-val">11px</span>
                             </div>
-                            <input type="range" min="9" max="22" value="10" oninput="updateState('dateFontSize', parseInt(this.value))" class="w-full accent-indigo-500 h-1.5 bg-slate-700 rounded cursor-pointer">
+                            <input type="range" min="9" max="22" value="11" oninput="updateState('dateFontSize', parseInt(this.value))" class="w-full accent-indigo-500 h-1.5 bg-slate-700 rounded cursor-pointer">
                         </div>
                     </div>
 
-                    <p class="text-[10px] text-slate-500 pt-1">Output Filename: <span id="filename-preview" class="font-mono text-indigo-400">SEA_20260808.png</span></p>
+                    <p class="text-[10px] text-slate-500 pt-1">Output Filename: <span id="filename-preview" class="font-mono text-indigo-400">PHOTOBOOTH.png</span></p>
 
                     <div class="flex gap-4 text-xs pt-1">
                         <label class="flex items-center gap-1.5 cursor-pointer">
@@ -320,7 +320,7 @@
                     <div id="frames-container" class="flex flex-col gap-3"></div>
 
                     <!-- Draggable, Rotatable & Resizable Postage Stamp Sticker -->
-                    <div id="draggable-stamp" class="absolute z-30 cursor-grab active:cursor-grabbing" style="top: 75%; left: 15%;">
+                    <div id="draggable-stamp" class="absolute z-30 cursor-grab active:cursor-grabbing" style="top: 85%; left: 70%;">
                         <div class="authentic-postage-stamp">
                             <div id="stamp-icon-badge" class="flex items-center gap-1 text-[9px] font-bold text-rose-500 border-b border-slate-300 pb-0.5 mb-0.5 w-full justify-center">
                                 <span id="stamp-icon-text">♥ LOVE</span>
@@ -332,7 +332,7 @@
                     <!-- Strip Footer -->
                     <div class="pt-2 pb-1 text-center flex flex-col items-center justify-center gap-1 relative">
                         <!-- Free Custom Description Text -->
-                        <p id="preview-description" class="font-bold tracking-widest uppercase">SEA</p>
+                        <p id="preview-description" class="font-bold tracking-widest uppercase">PHOTOBOOTH</p>
                         <p id="preview-date" class="font-medium tracking-wider opacity-90"></p>
 
                         <!-- Barcode Graphic -->
@@ -364,25 +364,28 @@
             'https://picsum.photos/400/300?random=14'
         ];
 
+        // Today's Date dynamically (e.g. "2026-03-30")
+        const todayStr = new Date().toISOString().split('T')[0];
+
         const state = {
             photos: [...defaultPlaceholders],
-            layout: '1-single',
+            layout: '3-vert',           // Default: 3-Photo Vertical
             frameShape: 'rect',
             bg: '#ffffff',
             textColor: '#09090b',
-            filter: 'filter-bw',
+            filter: 'none',             // Default: Normal
             font: 'font-sans-custom',
-            description: 'SEA',         // Free text for frame and filename
-            descFontSize: 12,           // Description Font Size in px
-            dateFontSize: 10,           // Date Font Size in px
-            stampText: 'adis & nana',   // Editable text on postage stamp
-            stampIcon: '♥ LOVE',        // Selectable Stamp Icon Tag
+            description: 'PHOTOBOOTH',  // Default: PHOTOBOOTH
+            descFontSize: 14,           // Default Font Size
+            dateFontSize: 11,           // Default Font Size
+            stampText: 'adis & nana',
+            stampIcon: '♥ LOVE',
             showPostageStamp: true,
-            stampRotation: -30,         // Rotation angle in degrees
-            stampScale: 1.0,            // Scale size factor
-            stampCenterRatioX: 0.28,    // Normalized center X
-            stampCenterRatioY: 0.82,    // Normalized center Y
-            date: '2026-08-08',
+            stampRotation: -15,
+            stampScale: 1.0,
+            stampCenterRatioX: 0.72,
+            stampCenterRatioY: 0.88,
+            date: todayStr,             // Default: Today's Date
             sprockets: false,
             showBarcode: false
         };
@@ -546,8 +549,8 @@
                 .replace(/_+/g, '_')
                 .toUpperCase();
 
-            const cleanDate = state.date ? state.date.replace(/-/g, '') : '20260808';
-            return `${cleanDesc}_${cleanDate}.png`;
+            const cleanDate = state.date ? state.date.replace(/-/g, '') : '';
+            return cleanDate ? `${cleanDesc}_${cleanDate}.png` : `${cleanDesc}.png`;
         }
 
         function getShapeClass(shape) {
