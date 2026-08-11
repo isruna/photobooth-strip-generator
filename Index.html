@@ -15,7 +15,7 @@
     
     <style>
         .photostrip-shadow {
-            box-shadow: 0 25px 30px -5px rgba(0, 0, 0, 0.3), 0 10px 15px -5px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 25px 30px -5px rgba(0, 0, 0, 0.5), 0 10px 15px -5px rgba(0, 0, 0, 0.3);
         }
         /* Live Filter CSS */
         .filter-bw { filter: grayscale(100%) contrast(125%); }
@@ -29,6 +29,15 @@
         .font-serif-custom { font-family: 'Playfair Display', serif; }
         .font-hand-custom { font-family: 'Caveat', cursive; }
         .font-mono-custom { font-family: 'Space Mono', monospace; }
+
+        /* High contrast sprocket perforation styling */
+        .sprocket-hole {
+            width: 10px;
+            height: 15px;
+            background-color: #f8fafc;
+            border-radius: 3px;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.6);
+        }
     </style>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen font-sans flex flex-col">
@@ -89,10 +98,22 @@
                 <!-- Layout Selector -->
                 <div class="space-y-2">
                     <label class="text-xs font-medium text-slate-400 uppercase tracking-wider">Strip Layout</label>
-                    <div class="grid grid-cols-3 gap-2 text-xs" id="layout-buttons">
-                        <button onclick="updateState('layout', '3-vert')" id="btn-3-vert" class="py-2 px-3 rounded-lg bg-indigo-600 text-white font-medium border border-indigo-500">3-Photo Vertical</button>
-                        <button onclick="updateState('layout', '4-vert')" id="btn-4-vert" class="py-2 px-3 rounded-lg bg-slate-800 text-slate-300 font-medium border border-slate-700">4-Photo Vertical</button>
-                        <button onclick="updateState('layout', '2x2')" id="btn-2x2" class="py-2 px-3 rounded-lg bg-slate-800 text-slate-300 font-medium border border-slate-700">2x2 Grid Card</button>
+                    <div class="grid grid-cols-4 gap-1.5 text-xs">
+                        <button onclick="updateState('layout', '1-single')" class="py-2 px-2 rounded-lg bg-slate-800 text-slate-300 font-medium border border-slate-700">Single</button>
+                        <button onclick="updateState('layout', '3-vert')" class="py-2 px-2 rounded-lg bg-indigo-600 text-white font-medium border border-indigo-500">3-Photo</button>
+                        <button onclick="updateState('layout', '4-vert')" class="py-2 px-2 rounded-lg bg-slate-800 text-slate-300 font-medium border border-slate-700">4-Photo</button>
+                        <button onclick="updateState('layout', '2x2')" class="py-2 px-2 rounded-lg bg-slate-800 text-slate-300 font-medium border border-slate-700">2x2 Grid</button>
+                    </div>
+                </div>
+
+                <!-- Frame Shapes -->
+                <div class="space-y-2">
+                    <label class="text-xs font-medium text-slate-400 uppercase tracking-wider">Photo Frame Shape</label>
+                    <div class="grid grid-cols-4 gap-2 text-xs">
+                        <button onclick="updateState('frameShape', 'rect')" class="py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200">Square</button>
+                        <button onclick="updateState('frameShape', 'rounded')" class="py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200">Rounded</button>
+                        <button onclick="updateState('frameShape', 'arch')" class="py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200">Arch Curve</button>
+                        <button onclick="updateState('frameShape', 'pill')" class="py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200">Capsule</button>
                     </div>
                 </div>
 
@@ -118,7 +139,7 @@
                     </div>
                 </div>
 
-                <!-- Film Sprockets -->
+                <!-- Film Sprockets Toggle -->
                 <div class="space-y-2 pt-1">
                     <div class="flex items-center justify-between bg-slate-900/60 p-3 rounded-xl border border-slate-700/50">
                         <span class="text-xs font-medium flex items-center gap-2">
@@ -182,21 +203,14 @@
                 <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Live Interactive Preview
             </div>
 
-            <!-- Photo Strip Preview Shell -->
-            <div id="photostrip-wrapper" class="relative py-2">
+            <!-- Photobooth Outer Strip Wrapper -->
+            <div id="photostrip-wrapper" class="flex items-stretch photostrip-shadow rounded overflow-hidden">
                 
-                <!-- Sprockets Left -->
-                <div id="sprockets-left" class="hidden absolute -left-4 top-0 bottom-0 flex flex-col justify-between py-4 z-10">
-                    <div class="w-2.5 h-4 bg-slate-900 rounded-sm my-1"></div>
-                    <div class="w-2.5 h-4 bg-slate-900 rounded-sm my-1"></div>
-                    <div class="w-2.5 h-4 bg-slate-900 rounded-sm my-1"></div>
-                    <div class="w-2.5 h-4 bg-slate-900 rounded-sm my-1"></div>
-                    <div class="w-2.5 h-4 bg-slate-900 rounded-sm my-1"></div>
-                    <div class="w-2.5 h-4 bg-slate-900 rounded-sm my-1"></div>
-                </div>
+                <!-- Sprocket Left Rail -->
+                <div id="sprockets-left" class="hidden bg-black px-2 py-4 flex flex-col justify-between items-center border-r border-slate-800"></div>
 
-                <!-- Photobooth Strip Box -->
-                <div id="photostrip-preview" class="photostrip-shadow bg-white text-zinc-900 p-4 rounded flex flex-col gap-3 w-[230px] transition-all font-sans-custom">
+                <!-- Main Photobooth Body -->
+                <div id="photostrip-preview" class="bg-white text-zinc-900 p-4 flex flex-col gap-3 w-[230px] transition-all font-sans-custom">
                     <div id="frames-container" class="flex flex-col gap-3"></div>
 
                     <!-- Strip Footer -->
@@ -205,7 +219,7 @@
                             <i id="stamp-icon" data-lucide="heart" class="w-3 h-3 fill-current text-rose-500"></i>
                             <p id="preview-title" class="font-black text-xs tracking-widest uppercase">PHOTOBOOTH</p>
                         </div>
-                        <p id="preview-date" class="text-[9px] opacity-75 tracking-wider"></p>
+                        <p id="preview-date" class="text-[10px] opacity-75 font-medium tracking-wider"></p>
 
                         <!-- Barcode Graphic -->
                         <div id="preview-barcode" class="pt-1 opacity-80 flex gap-0.5 justify-center h-4 items-end">
@@ -221,22 +235,14 @@
                     </div>
                 </div>
 
-                <!-- Sprockets Right -->
-                <div id="sprockets-right" class="hidden absolute -right-4 top-0 bottom-0 flex flex-col justify-between py-4 z-10">
-                    <div class="w-2.5 h-4 bg-slate-900 rounded-sm my-1"></div>
-                    <div class="w-2.5 h-4 bg-slate-900 rounded-sm my-1"></div>
-                    <div class="w-2.5 h-4 bg-slate-900 rounded-sm my-1"></div>
-                    <div class="w-2.5 h-4 bg-slate-900 rounded-sm my-1"></div>
-                    <div class="w-2.5 h-4 bg-slate-900 rounded-sm my-1"></div>
-                    <div class="w-2.5 h-4 bg-slate-900 rounded-sm my-1"></div>
-                </div>
+                <!-- Sprocket Right Rail -->
+                <div id="sprockets-right" class="hidden bg-black px-2 py-4 flex flex-col justify-between items-center border-l border-slate-800"></div>
             </div>
         </section>
     </main>
 
     <!-- App Engine JavaScript -->
     <script>
-        // Default Placeholders
         const defaultPlaceholders = [
             'https://picsum.photos/400/300?random=11',
             'https://picsum.photos/400/300?random=12',
@@ -244,22 +250,21 @@
             'https://picsum.photos/400/300?random=14'
         ];
 
-        // Application State
         const state = {
             photos: [...defaultPlaceholders],
             layout: '3-vert',
+            frameShape: 'rect', // rect, rounded, arch, pill
             bg: '#ffffff',
             textColor: '#09090b',
             filter: 'none',
             font: 'font-sans-custom',
             title: 'PHOTOBOOTH',
-            date: new Date().toISOString().split('T')[0],
+            date: '2026-08-08',
             sprockets: false,
             showBarcode: true,
             showHeart: true
         };
 
-        // DOM Element Refs
         const dropzone = document.getElementById('dropzone');
         const photoInput = document.getElementById('photo-input');
         const thumbContainer = document.getElementById('thumb-container');
@@ -273,14 +278,12 @@
         const sprocketsLeft = document.getElementById('sprockets-left');
         const sprocketsRight = document.getElementById('sprockets-right');
 
-        // Init
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('date-input').value = state.date;
             renderAll();
             lucide.createIcons();
         });
 
-        // Event Listeners for File Handling
         dropzone.addEventListener('click', () => photoInput.click());
         photoInput.addEventListener('change', handleFileSelect);
 
@@ -307,7 +310,6 @@
             const files = Array.from(fileList).filter(f => f.type.startsWith('image/'));
             if (!files.length) return;
 
-            // Clear defaults if using uploaded files
             if (state.photos[0] && state.photos[0].startsWith('https://picsum')) {
                 state.photos = [];
             }
@@ -344,7 +346,35 @@
             renderAll();
         }
 
-        // Render Everything
+        function formatDateDisplay(isoDateStr) {
+            if (!isoDateStr) return '';
+            const parts = isoDateStr.split('-');
+            if (parts.length !== 3) return isoDateStr;
+            const dateObj = new Date(parts[0], parts[1] - 1, parts[2]);
+            const day = dateObj.getDate();
+            const month = dateObj.toLocaleString('en-US', { month: 'short' });
+            const year = dateObj.getFullYear();
+            return `${day} ${month} ${year}`;
+        }
+
+        function generateFilename() {
+            const cleanTitle = (state.title || 'PHOTOBOOTH')
+                .trim()
+                .replace(/[^a-zA-Z0-9]/g, '_')
+                .toUpperCase();
+            
+            const cleanDate = state.date ? state.date.replace(/-/g, '') : '20260808';
+            return `${cleanTitle}_${cleanDate}.png`;
+        }
+
+        // Helper for Photo Frame Shape Classes in Preview
+        function getShapeClass(shape) {
+            if (shape === 'rounded') return 'rounded-2xl';
+            if (shape === 'arch') return 'rounded-t-full rounded-b-sm';
+            if (shape === 'pill') return 'rounded-full';
+            return 'rounded-sm'; // Default rect
+        }
+
         function renderAll() {
             // Update Thumbnails
             thumbContainer.innerHTML = '';
@@ -362,7 +392,10 @@
             photoCount.innerText = `${state.photos.length} / 4 loaded`;
 
             // Layout Dimensions
-            if (state.layout === '3-vert') {
+            if (state.layout === '1-single') {
+                previewStrip.style.width = '240px';
+                framesContainer.className = 'flex flex-col gap-3';
+            } else if (state.layout === '3-vert') {
                 previewStrip.style.width = '230px';
                 framesContainer.className = 'flex flex-col gap-3';
             } else if (state.layout === '4-vert') {
@@ -375,11 +408,17 @@
 
             // Render Frames in Preview
             framesContainer.innerHTML = '';
-            const count = state.layout === '3-vert' ? 3 : 4;
+            let count = 3;
+            if (state.layout === '1-single') count = 1;
+            if (state.layout === '4-vert' || state.layout === '2x2') count = 4;
+
+            const shapeClass = getShapeClass(state.frameShape);
+            const aspectClass = state.layout === '1-single' ? 'aspect-square' : 'aspect-[4/3]';
+
             for (let i = 0; i < count; i++) {
                 const imgSrc = state.photos[i] || state.photos[state.photos.length - 1] || defaultPlaceholders[0];
                 const frame = document.createElement('div');
-                frame.className = 'aspect-[4/3] bg-slate-200 overflow-hidden relative rounded-sm';
+                frame.className = `${aspectClass} bg-slate-200 overflow-hidden relative ${shapeClass}`;
                 frame.innerHTML = `<img src="${imgSrc}" class="w-full h-full object-cover ${state.filter !== 'none' ? state.filter : ''}">`;
                 framesContainer.appendChild(frame);
             }
@@ -387,41 +426,81 @@
             // Colors & Fonts
             previewStrip.style.background = state.bg;
             previewStrip.style.color = state.textColor;
-            previewStrip.className = `photostrip-shadow p-4 rounded flex flex-col gap-3 transition-all ${state.font}`;
+            previewStrip.className = `p-4 flex flex-col gap-3 transition-all ${state.font}`;
 
-            // Footer
+            // Footer Text & Formatted Date
             previewTitle.innerText = state.title || 'PHOTOBOOTH';
-            previewDate.innerText = state.date ? state.date.replace(/-/g, ' . ') : '';
+            previewDate.innerText = formatDateDisplay(state.date);
             
             previewBarcode.style.display = state.showBarcode ? 'flex' : 'none';
             stampIcon.style.display = state.showHeart ? 'inline-block' : 'none';
 
-            // Sprockets
+            // Render Sprocket Holes
             if (state.sprockets) {
                 sprocketsLeft.classList.remove('hidden');
                 sprocketsRight.classList.remove('hidden');
+                
+                let holeCount = 11;
+                if (state.layout === '1-single') holeCount = 6;
+                if (state.layout === '4-vert') holeCount = 14;
+                if (state.layout === '2x2') holeCount = 12;
+
+                let holesHTML = '';
+                for (let i = 0; i < holeCount; i++) {
+                    holesHTML += `<div class="sprocket-hole"></div>`;
+                }
+                sprocketsLeft.innerHTML = holesHTML;
+                sprocketsRight.innerHTML = holesHTML;
             } else {
                 sprocketsLeft.classList.add('hidden');
                 sprocketsRight.classList.add('hidden');
             }
 
-            // Refresh Icons
             lucide.createIcons();
         }
 
-        // High-Resolution Client-Side Export Engine (Canvas API)
+        // Path Clipping Helper for Canvas Shapes
+        function applyCanvasShapePath(ctx, x, y, w, h, shape) {
+            ctx.beginPath();
+            if (shape === 'rounded') {
+                const r = 24;
+                ctx.roundRect(x, y, w, h, r);
+            } else if (shape === 'arch') {
+                const r = w / 2;
+                ctx.moveTo(x, y + h);
+                ctx.lineTo(x, y + r);
+                ctx.arcTo(x, y, x + r, y, r);
+                ctx.arcTo(x + w, y, x + w, y + r, r);
+                ctx.lineTo(x + w, y + h);
+                ctx.closePath();
+            } else if (shape === 'pill') {
+                const r = Math.min(w, h) / 2;
+                ctx.roundRect(x, y, w, h, r);
+            } else {
+                // Rect
+                ctx.rect(x, y, w, h);
+            }
+            ctx.clip();
+        }
+
+        // High-Res Canvas Exporter Engine
         async function downloadStrip() {
-            const scale = 3; // 3x HD Export
+            const scale = 3;
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
 
             const is2x2 = state.layout === '2x2';
-            const photoCount = state.layout === '3-vert' ? 3 : 4;
+            const isSingle = state.layout === '1-single';
+            let photoCount = 3;
+            if (isSingle) photoCount = 1;
+            if (state.layout === '4-vert' || is2x2) photoCount = 4;
 
-            // Dimensions in Canvas Coordinates
-            const width = is2x2 ? 600 : 450;
-            const photoWidth = is2x2 ? 260 : 390;
-            const photoHeight = photoWidth * (3 / 4);
+            const sprocketWidth = state.sprockets ? 36 : 0;
+            const contentWidth = is2x2 ? 600 : (isSingle ? 480 : 450);
+            const totalWidth = contentWidth + (sprocketWidth * 2);
+            
+            const photoWidth = is2x2 ? 260 : (isSingle ? 420 : 390);
+            const photoHeight = isSingle ? photoWidth : photoWidth * (3 / 4);
             const padding = 30;
             const gap = 20;
 
@@ -432,15 +511,32 @@
                 totalHeight += (photoHeight * photoCount) + (gap * (photoCount - 1)) + 150;
             }
 
-            canvas.width = width * scale;
+            canvas.width = totalWidth * scale;
             canvas.height = totalHeight * scale;
             ctx.scale(scale, scale);
 
-            // Draw Background
+            // Background Fill
             ctx.fillStyle = state.bg;
-            ctx.fillRect(0, 0, width, totalHeight);
+            ctx.fillRect(0, 0, totalWidth, totalHeight);
 
-            // Filter mapping
+            // Draw Sprocket Side Rails
+            if (state.sprockets) {
+                ctx.fillStyle = '#000000';
+                ctx.fillRect(0, 0, sprocketWidth, totalHeight);
+                ctx.fillRect(totalWidth - sprocketWidth, 0, sprocketWidth, totalHeight);
+
+                // Cutouts
+                ctx.fillStyle = '#f8fafc';
+                const holeW = 12;
+                const holeH = 18;
+                const holeGap = 32;
+                for (let y = 20; y < totalHeight - 20; y += holeGap) {
+                    drawRoundedRect(ctx, (sprocketWidth - holeW) / 2, y, holeW, holeH, 3);
+                    drawRoundedRect(ctx, totalWidth - sprocketWidth + (sprocketWidth - holeW) / 2, y, holeW, holeH, 3);
+                }
+            }
+
+            // Canvas Filter Mapping
             let canvasFilter = 'none';
             if (state.filter === 'filter-bw') canvasFilter = 'grayscale(100%) contrast(125%)';
             if (state.filter === 'filter-sepia') canvasFilter = 'sepia(80%) hue-rotate(-30deg) saturate(140%)';
@@ -448,22 +544,23 @@
             if (state.filter === 'filter-cool') canvasFilter = 'saturate(90%) hue-rotate(20deg) contrast(110%)';
             if (state.filter === 'filter-cyber') canvasFilter = 'saturate(200%) hue-rotate(140deg) contrast(120%)';
 
-            // Draw Images
+            // Draw Images with Frame Shape Clipping
             for (let i = 0; i < photoCount; i++) {
                 const imgSrc = state.photos[i] || state.photos[state.photos.length - 1] || defaultPlaceholders[0];
                 const img = await loadImage(imgSrc);
 
-                let x = padding;
+                let x = sprocketWidth + padding;
                 let y = padding;
 
                 if (is2x2) {
-                    x = padding + (i % 2) * (photoWidth + gap);
+                    x = sprocketWidth + padding + (i % 2) * (photoWidth + gap);
                     y = padding + Math.floor(i / 2) * (photoHeight + gap);
                 } else {
                     y = padding + i * (photoHeight + gap);
                 }
 
                 ctx.save();
+                applyCanvasShapePath(ctx, x, y, photoWidth, photoHeight, state.frameShape);
                 ctx.filter = canvasFilter;
                 drawImageCover(ctx, img, x, y, photoWidth, photoHeight);
                 ctx.restore();
@@ -482,19 +579,33 @@
             await document.fonts.ready;
 
             ctx.font = `900 22px "${fontName}", sans-serif`;
-            ctx.fillText((state.title || 'PHOTOBOOTH').toUpperCase(), width / 2, footerY);
+            ctx.fillText((state.title || 'PHOTOBOOTH').toUpperCase(), totalWidth / 2, footerY);
 
-            ctx.font = `400 13px "${fontName}", monospace`;
-            ctx.fillText(state.date ? state.date.replace(/-/g, ' . ') : '', width / 2, footerY + 25);
+            ctx.font = `500 13px "${fontName}", monospace`;
+            ctx.fillText(formatDateDisplay(state.date), totalWidth / 2, footerY + 25);
 
-            // Trigger File Download
+            // Download Link
             const link = document.createElement('a');
-            link.download = `photostrip-${Date.now()}.png`;
+            link.download = generateFilename();
             link.href = canvas.toDataURL('image/png');
             link.click();
         }
 
-        // Helper: Image Cover Crop for Canvas
+        function drawRoundedRect(ctx, x, y, width, height, radius) {
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + width - radius, y);
+            ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+            ctx.lineTo(x + width, y + height - radius);
+            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+            ctx.lineTo(x + radius, y + height);
+            ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
+            ctx.fill();
+        }
+
         function drawImageCover(ctx, img, x, y, w, h) {
             const imgAspect = img.width / img.height;
             const targetAspect = w / h;
@@ -514,7 +625,6 @@
             ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
         }
 
-        // Helper: Async Load Image
         function loadImage(src) {
             return new Promise((resolve) => {
                 const img = new Image();
