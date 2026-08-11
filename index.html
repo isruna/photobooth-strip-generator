@@ -259,17 +259,17 @@
                         <div class="space-y-1">
                             <div class="flex justify-between text-[10px] text-slate-400">
                                 <span>Rotate</span>
-                                <span id="angle-val">-15°</span>
+                                <span id="angle-val">-30°</span>
                             </div>
-                            <input type="range" min="-180" max="180" value="-15" oninput="updateState('stampRotation', parseInt(this.value))" class="w-full accent-indigo-500 h-1.5 bg-slate-700 rounded cursor-pointer">
+                            <input type="range" min="-180" max="180" value="-30" oninput="updateState('stampRotation', parseInt(this.value))" class="w-full accent-indigo-500 h-1.5 bg-slate-700 rounded cursor-pointer">
                         </div>
 
                         <div class="space-y-1">
                             <div class="flex justify-between text-[10px] text-slate-400">
                                 <span>Scale Size</span>
-                                <span id="scale-val">1.0x</span>
+                                <span id="scale-val">0.7x</span>
                             </div>
-                            <input type="range" min="0.5" max="2.0" step="0.05" value="1.0" oninput="updateState('stampScale', parseFloat(this.value))" class="w-full accent-indigo-500 h-1.5 bg-slate-700 rounded cursor-pointer">
+                            <input type="range" min="0.5" max="2.0" step="0.05" value="0.7" oninput="updateState('stampScale', parseFloat(this.value))" class="w-full accent-indigo-500 h-1.5 bg-slate-700 rounded cursor-pointer">
                         </div>
                     </div>
                 </div>
@@ -439,23 +439,23 @@
 
         const state = {
             photos: [...defaultPlaceholders],
-            layout: '3-vert',           // Default: 3-Photo Vertical
+            layout: '3-vert',
             frameShape: 'rect',
-            bg: '#ffffff',              // Default Frame BG
-            textColor: '#09090b',       // Default Text Color
-            filter: 'none',             // Default: Normal
+            bg: '#ffffff',
+            textColor: '#09090b',
+            filter: 'none',
             font: 'font-sans-custom',
-            description: 'PHOTOBOOTH',  // Default: PHOTOBOOTH
+            description: 'PHOTOBOOTH',
             descFontSize: 14,
             dateFontSize: 11,
             stampText: 'adis & nana',
             stampIcon: '♥ LOVE',
             showPostageStamp: true,
-            stampRotation: -15,
-            stampScale: 1.0,
+            stampRotation: -30,         // Default: -30°
+            stampScale: 0.7,            // Default: 0.7x
             stampCenterRatioX: 0.72,
             stampCenterRatioY: 0.88,
-            date: todayStr,             // Default: Today's Date
+            date: todayStr,
             sprockets: false,
             showBarcode: false
         };
