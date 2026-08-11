@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StripSnap Pro - Photobooth Photo Strip Generator</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Custom Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Inter:wght@400;700;900&family=Playfair+Display:ital,wght@0,700;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        .photostrip-shadow {
+            box-shadow: 0 25px 30px -5px rgba(0, 0, 0, 0.3), 0 10px 15px -5px rgba(0, 0, 0, 0.2);
+        }
+        /* Live Filter CSS */
+        .filter-bw { filter: grayscale(100%) contrast(125%); }
+        .filter-sepia { filter: sepia(80%) hue-rotate(-30deg) saturate(140%); }
+        .filter-cool { filter: saturate(90%) hue-rotate(20deg) contrast(110%); }
+        .filter-warm { filter: sepia(30%) saturate(140%) contrast(105%); }
+        .filter-cyber { filter: saturate(200%) hue-rotate(140deg) contrast(120%); }
+
+        /* Font Classes */
+        .font-sans-custom { font-family: 'Inter', sans-serif; }
+        .font-serif-custom { font-family: 'Playfair Display', serif; }
+        .font-hand-custom { font-family: 'Caveat', cursive; }
+        .font-mono-custom { font-family: 'Space Mono', monospace; }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans flex flex-col">
+
+    <!-- Header / Navbar -->
+    <header class="border-b border-slate-800 bg-slate-950/70 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="bg-indigo-600 p-2 rounded-lg text-white">
+                    <i data-lucide="camera" class="w-5 h-5"></i>
+                </div>
+                <span class="font-bold text-xl tracking-wide bg-gradient-to-r from-white via-slate-200 to-indigo-400 bg-clip-text text-transparent">StripSnap Pro</span>
+            </div>
+            
+            <div class="flex items-center gap-4 text-xs">
+                <span class="hidden sm:flex items-center gap-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1 rounded-full font-medium">
+                    <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> 100% Client-Side Privacy
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- LEFT COLUMN: Control Panel -->
+        <section class="lg:col-span-5 flex flex-col gap-6 overflow-y-auto">
+            
+            <!-- Step 1: Upload Photos -->
+            <div class="bg-slate-800/50 border border-slate-700/60 rounded-2xl p-5 space-y-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="font-semibold text-base flex items-center gap-2">
+                        <span class="flex items-center justify-center w-6 h-6 bg-indigo-600 rounded-full text-xs font-bold">1</span> 
+                        Upload Photos
+                    </h2>
+                    <span id="photo-count" class="text-xs text-slate-400">0 / 4 loaded</span>
+                </div>
+                
+                <!-- Dropzone -->
+                <div id="dropzone" class="border-2 border-dashed border-slate-600 hover:border-indigo-500 bg-slate-900/40 hover:bg-slate-900/80 transition-all rounded-xl p-5 text-center cursor-pointer flex flex-col items-center justify-center gap-1.5 group">
+                    <i data-lucide="upload-cloud" class="w-7 h-7 text-indigo-400 group-hover:scale-110 transition-transform"></i>
+                    <p class="text-xs font-medium">Click to upload or drag & drop</p>
+                    <p class="text-[10px] text-slate-500">JPG, PNG, WEBP (Client-side process)</p>
+                    <input type="file" multiple accept="image/*" class="hidden" id="photo-input">
+                </div>
+
+                <!-- Thumbnails List -->
+                <div class="grid grid-cols-4 gap-2 pt-1" id="thumb-container"></div>
+            </div>
+
+            <!-- Step 2: Extended Styling Controls -->
+            <div class="bg-slate-800/50 border border-slate-700/60 rounded-2xl p-5 space-y-5">
+                <h2 class="font-semibold text-base flex items-center gap-2">
+                    <span class="flex items-center justify-center w-6 h-6 bg-indigo-600 rounded-full text-xs font-bold">2</span> 
+                    Customize Style
+                </h2>
+
+                <!-- Layout Selector -->
+                <div class="space-y-2">
+                    <label class="text-xs font-medium text-slate-400 uppercase tracking-wider">Strip Layout</label>
+                    <div class="grid grid-cols-3 gap-2 text-xs" id="layout-buttons">
+                        <button onclick="updateState('layout', '3-vert')" id="btn-3-vert" class="py-2 px-3 rounded-lg bg-indigo-600 text-white font-medium border border-indigo-500">3-Photo Vertical</button>
+                        <button onclick="updateState('layout', '4-vert')" id="btn-4-vert" class="py-2 px-3 rounded-lg bg-slate-800 text-slate-300 font-medium border border-slate-700">4-Photo Vertical</button>
+                        <button onclick="updateState('layout', '2x2')" id="btn-2x2" class="py-2 px-3 rounded-lg bg-slate-800 text-slate-300 font-medium border border-slate-700">2x2 Grid Card</button>
+                    </div>
+                </div>
+
+                <!-- Frame Color Selector -->
+                <div class="space-y-2">
+                    <label class="text-xs font-medium text-slate-400 uppercase tracking-wider">Frame Theme</label>
+                    <div class="flex flex-wrap gap-2.5 items-center">
+                        <button onclick="setTheme('#ffffff', '#09090b')" class="w-8 h-8 rounded-full bg-white border-2 border-indigo-500 ring-2 ring-indigo-500/30 transition-transform hover:scale-110" title="Classic White"></button>
+                        <button onclick="setTheme('#18181b', '#ffffff')" class="w-8 h-8 rounded-full bg-zinc-900 border border-slate-700 transition-transform hover:scale-110" title="Noir Black"></button>
+                        <button onclick="setTheme('#fbcfe8', '#831843')" class="w-8 h-8 rounded-full bg-pink-200 border border-slate-700 transition-transform hover:scale-110" title="Y2K Pink"></button>
+                        <button onclick="setTheme('#fef3c7', '#78350f')" class="w-8 h-8 rounded-full bg-amber-100 border border-slate-700 transition-transform hover:scale-110" title="Vintage Cream"></button>
+                        <button onclick="setTheme('#a5f3fc', '#164e63')" class="w-8 h-8 rounded-full bg-cyan-200 border border-slate-700 transition-transform hover:scale-110" title="Retro Cyan"></button>
+                        
+                        <div class="h-6 w-px bg-slate-700 mx-1"></div>
+                        
+                        <!-- Custom Color Picker -->
+                        <label class="relative cursor-pointer">
+                            <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center border border-slate-600 text-slate-300">
+                                <i data-lucide="pipette" class="w-4 h-4"></i>
+                            </div>
+                            <input type="color" onchange="setTheme(this.value, '#000000')" class="absolute opacity-0 inset-0 w-full h-full cursor-pointer">
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Film Sprockets -->
+                <div class="space-y-2 pt-1">
+                    <div class="flex items-center justify-between bg-slate-900/60 p-3 rounded-xl border border-slate-700/50">
+                        <span class="text-xs font-medium flex items-center gap-2">
+                            <i data-lucide="film" class="w-4 h-4 text-indigo-400"></i> 35mm Film Sprocket Holes
+                        </span>
+                        <input type="checkbox" id="sprocket-toggle" onchange="updateState('sprockets', this.checked)" class="w-4 h-4 accent-indigo-600 rounded cursor-pointer">
+                    </div>
+                </div>
+
+                <!-- Photo Filters -->
+                <div class="space-y-2">
+                    <label class="text-xs font-medium text-slate-400 uppercase tracking-wider">Photo Filter</label>
+                    <div class="grid grid-cols-3 gap-2 text-xs">
+                        <button onclick="updateState('filter', 'none')" class="py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200">Normal</button>
+                        <button onclick="updateState('filter', 'filter-bw')" class="py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200">B&W Noir</button>
+                        <button onclick="updateState('filter', 'filter-sepia')" class="py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200">Vintage</button>
+                        <button onclick="updateState('filter', 'filter-warm')" class="py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200">Warm</button>
+                        <button onclick="updateState('filter', 'filter-cool')" class="py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200">Cool Tone</button>
+                        <button onclick="updateState('filter', 'filter-cyber')" class="py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200">Cyberpunk</button>
+                    </div>
+                </div>
+
+                <!-- Footer Text & Font Options -->
+                <div class="space-y-3 pt-2">
+                    <label class="text-xs font-medium text-slate-400 uppercase tracking-wider">Footer Customization</label>
+                    
+                    <div class="grid grid-cols-2 gap-2">
+                        <select onchange="updateState('font', this.value)" class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-indigo-500 text-slate-200">
+                            <option value="font-sans-custom">Sans-Serif (Modern)</option>
+                            <option value="font-serif-custom">Serif (Retro)</option>
+                            <option value="font-hand-custom">Handwritten</option>
+                            <option value="font-mono-custom">Monospace (Digital)</option>
+                        </select>
+                        
+                        <input type="date" id="date-input" onchange="updateState('date', this.value)" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-xs text-slate-300 focus:outline-none focus:border-indigo-500">
+                    </div>
+
+                    <input type="text" id="title-input" oninput="updateState('title', this.value)" placeholder="Custom Title..." value="PHOTOBOOTH" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-indigo-500">
+                    
+                    <div class="flex gap-4 text-xs pt-1">
+                        <label class="flex items-center gap-1.5 cursor-pointer">
+                            <input type="checkbox" checked onchange="updateState('showBarcode', this.checked)" class="accent-indigo-600 rounded"> Barcode
+                        </label>
+                        <label class="flex items-center gap-1.5 cursor-pointer">
+                            <input type="checkbox" checked onchange="updateState('showHeart', this.checked)" class="accent-indigo-600 rounded"> Heart Stamp
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Download Button -->
+            <button onclick="downloadStrip()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 transition-all active:scale-[0.99]">
+                <i data-lucide="download" class="w-5 h-5"></i>
+                Download High-Res Strip
+            </button>
+        </section>
+
+        <!-- RIGHT COLUMN: Live Interactive Canvas Preview -->
+        <section class="lg:col-span-7 bg-slate-950 border border-slate-800 rounded-2xl p-6 flex flex-col items-center justify-center min-h-[600px] relative overflow-hidden">
+            <div class="absolute top-4 left-4 text-xs font-medium text-slate-500 uppercase tracking-wider flex items-center gap-1.5 z-10">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Live Interactive Preview
+            </div>
+
+            <!-- Photo Strip Preview Shell -->
+            <div id="photostrip-wrapper" class="relative py-2">
+                
+                <!-- Sprockets Left -->
+                <div id="sprockets-left" class="hidden absolute -left-4 top-0 bottom-0 flex flex-col justify-between py-4 z-10">
+                    <div class="w-2.5 h-4 bg-slate-900 rounded-sm my-1"></div>
+                    <div class="w-2.5 h-4 bg-slate-900 rounded-sm my-1"></div>
+                    <div class="w-2.5 h-4 bg-slate-900 rounded-sm my-1"></div>
+                    <div class="w-2.5 h-4 bg-slate-900 rounded-sm my-1"></div>
+                    <div class="w-2.5 h-4 bg-slate-900 rounded-sm my-1"></div>
+                    <div class="w-2.5 h-4 bg-slate-900 rounded-sm my-1"></div>
+                </div>
+
+                <!-- Photobooth Strip Box -->
+                <div id="photostrip-preview" class="photostrip-shadow bg-white text-zinc-900 p-4 rounded flex flex-col gap-3 w-[230px] transition-all font-sans-custom">
+                    <div id="frames-container" class="flex flex-col gap-3"></div>
+
+                    <!-- Strip Footer -->
+                    <div class="pt-2 pb-1 text-center flex flex-col items-center justify-center gap-1">
+                        <div class="flex items-center gap-1.5">
+                            <i id="stamp-icon" data-lucide="heart" class="w-3 h-3 fill-current text-rose-500"></i>
+                            <p id="preview-title" class="font-black text-xs tracking-widest uppercase">PHOTOBOOTH</p>
+                        </div>
+                        <p id="preview-date" class="text-[9px] opacity-75 tracking-wider"></p>
+
+                        <!-- Barcode Graphic -->
+                        <div id="preview-barcode" class="pt-1 opacity-80 flex gap-0.5 justify-center h-4 items-end">
+                            <div class="w-0.5 h-full bg-current"></div>
+                            <div class="w-1 h-full bg-current"></div>
+                            <div class="w-0.5 h-full bg-current"></div>
+                            <div class="w-1.5 h-full bg-current"></div>
+                            <div class="w-0.5 h-full bg-current"></div>
+                            <div class="w-1 h-full bg-current"></div>
+                            <div class="w-0.5 h-full bg-current"></div>
+                            <div class="w-2 h-full bg-current"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sprockets Right -->
+                <div id="sprockets-right" class="hidden absolute -right-4 top-0 bottom-0 flex flex-col justify-between py-4 z-10">
+                    <div class="w-2.5 h-4 bg-slate-900 rounded-sm my-1"></div>
+                    <div class="w-2.5 h-4 bg-slate-900 rounded-sm my-1"></div>
+                    <div class="w-2.5 h-4 bg-slate-900 rounded-sm my-1"></div>
+                    <div class="w-2.5 h-4 bg-slate-900 rounded-sm my-1"></div>
+                    <div class="w-2.5 h-4 bg-slate-900 rounded-sm my-1"></div>
+                    <div class="w-2.5 h-4 bg-slate-900 rounded-sm my-1"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- App Engine JavaScript -->
+    <script>
+        // Default Placeholders
+        const defaultPlaceholders = [
+            'https://picsum.photos/400/300?random=11',
+            'https://picsum.photos/400/300?random=12',
+            'https://picsum.photos/400/300?random=13',
+            'https://picsum.photos/400/300?random=14'
+        ];
+
+        // Application State
+        const state = {
+            photos: [...defaultPlaceholders],
+            layout: '3-vert',
+            bg: '#ffffff',
+            textColor: '#09090b',
+            filter: 'none',
+            font: 'font-sans-custom',
+            title: 'PHOTOBOOTH',
+            date: new Date().toISOString().split('T')[0],
+            sprockets: false,
+            showBarcode: true,
+            showHeart: true
+        };
+
+        // DOM Element Refs
+        const dropzone = document.getElementById('dropzone');
+        const photoInput = document.getElementById('photo-input');
+        const thumbContainer = document.getElementById('thumb-container');
+        const photoCount = document.getElementById('photo-count');
+        const previewStrip = document.getElementById('photostrip-preview');
+        const framesContainer = document.getElementById('frames-container');
+        const previewTitle = document.getElementById('preview-title');
+        const previewDate = document.getElementById('preview-date');
+        const previewBarcode = document.getElementById('preview-barcode');
+        const stampIcon = document.getElementById('stamp-icon');
+        const sprocketsLeft = document.getElementById('sprockets-left');
+        const sprocketsRight = document.getElementById('sprockets-right');
+
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('date-input').value = state.date;
+            renderAll();
+            lucide.createIcons();
+        });
+
+        // Event Listeners for File Handling
+        dropzone.addEventListener('click', () => photoInput.click());
+        photoInput.addEventListener('change', handleFileSelect);
+
+        dropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropzone.classList.add('border-indigo-500', 'bg-slate-900/80');
+        });
+
+        dropzone.addEventListener('dragleave', () => {
+            dropzone.classList.remove('border-indigo-500', 'bg-slate-900/80');
+        });
+
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('border-indigo-500', 'bg-slate-900/80');
+            if (e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
+        });
+
+        function handleFileSelect(e) {
+            if (e.target.files.length) handleFiles(e.target.files);
+        }
+
+        function handleFiles(fileList) {
+            const files = Array.from(fileList).filter(f => f.type.startsWith('image/'));
+            if (!files.length) return;
+
+            // Clear defaults if using uploaded files
+            if (state.photos[0] && state.photos[0].startsWith('https://picsum')) {
+                state.photos = [];
+            }
+
+            let loaded = 0;
+            files.forEach(file => {
+                if (state.photos.length >= 4) return;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    state.photos.push(e.target.result);
+                    loaded++;
+                    if (loaded === files.length || state.photos.length === 4) {
+                        renderAll();
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function removePhoto(index) {
+            state.photos.splice(index, 1);
+            if (state.photos.length === 0) state.photos = [...defaultPlaceholders];
+            renderAll();
+        }
+
+        function updateState(key, value) {
+            state[key] = value;
+            renderAll();
+        }
+
+        function setTheme(bg, text) {
+            state.bg = bg;
+            state.textColor = text;
+            renderAll();
+        }
+
+        // Render Everything
+        function renderAll() {
+            // Update Thumbnails
+            thumbContainer.innerHTML = '';
+            state.photos.forEach((src, idx) => {
+                const thumb = document.createElement('div');
+                thumb.className = 'relative group aspect-square rounded-lg bg-slate-700 overflow-hidden border border-slate-600';
+                thumb.innerHTML = `
+                    <img src="${src}" class="object-cover w-full h-full">
+                    <button onclick="removePhoto(${idx})" class="absolute top-1 right-1 bg-black/70 hover:bg-red-600 text-white rounded-full p-1 transition-colors">
+                        <i data-lucide="x" class="w-3 h-3"></i>
+                    </button>
+                `;
+                thumbContainer.appendChild(thumb);
+            });
+            photoCount.innerText = `${state.photos.length} / 4 loaded`;
+
+            // Layout Dimensions
+            if (state.layout === '3-vert') {
+                previewStrip.style.width = '230px';
+                framesContainer.className = 'flex flex-col gap-3';
+            } else if (state.layout === '4-vert') {
+                previewStrip.style.width = '220px';
+                framesContainer.className = 'flex flex-col gap-2.5';
+            } else if (state.layout === '2x2') {
+                previewStrip.style.width = '320px';
+                framesContainer.className = 'grid grid-cols-2 gap-2.5';
+            }
+
+            // Render Frames in Preview
+            framesContainer.innerHTML = '';
+            const count = state.layout === '3-vert' ? 3 : 4;
+            for (let i = 0; i < count; i++) {
+                const imgSrc = state.photos[i] || state.photos[state.photos.length - 1] || defaultPlaceholders[0];
+                const frame = document.createElement('div');
+                frame.className = 'aspect-[4/3] bg-slate-200 overflow-hidden relative rounded-sm';
+                frame.innerHTML = `<img src="${imgSrc}" class="w-full h-full object-cover ${state.filter !== 'none' ? state.filter : ''}">`;
+                framesContainer.appendChild(frame);
+            }
+
+            // Colors & Fonts
+            previewStrip.style.background = state.bg;
+            previewStrip.style.color = state.textColor;
+            previewStrip.className = `photostrip-shadow p-4 rounded flex flex-col gap-3 transition-all ${state.font}`;
+
+            // Footer
+            previewTitle.innerText = state.title || 'PHOTOBOOTH';
+            previewDate.innerText = state.date ? state.date.replace(/-/g, ' . ') : '';
+            
+            previewBarcode.style.display = state.showBarcode ? 'flex' : 'none';
+            stampIcon.style.display = state.showHeart ? 'inline-block' : 'none';
+
+            // Sprockets
+            if (state.sprockets) {
+                sprocketsLeft.classList.remove('hidden');
+                sprocketsRight.classList.remove('hidden');
+            } else {
+                sprocketsLeft.classList.add('hidden');
+                sprocketsRight.classList.add('hidden');
+            }
+
+            // Refresh Icons
+            lucide.createIcons();
+        }
+
+        // High-Resolution Client-Side Export Engine (Canvas API)
+        async function downloadStrip() {
+            const scale = 3; // 3x HD Export
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            const is2x2 = state.layout === '2x2';
+            const photoCount = state.layout === '3-vert' ? 3 : 4;
+
+            // Dimensions in Canvas Coordinates
+            const width = is2x2 ? 600 : 450;
+            const photoWidth = is2x2 ? 260 : 390;
+            const photoHeight = photoWidth * (3 / 4);
+            const padding = 30;
+            const gap = 20;
+
+            let totalHeight = padding;
+            if (is2x2) {
+                totalHeight += (photoHeight * 2) + gap + 150;
+            } else {
+                totalHeight += (photoHeight * photoCount) + (gap * (photoCount - 1)) + 150;
+            }
+
+            canvas.width = width * scale;
+            canvas.height = totalHeight * scale;
+            ctx.scale(scale, scale);
+
+            // Draw Background
+            ctx.fillStyle = state.bg;
+            ctx.fillRect(0, 0, width, totalHeight);
+
+            // Filter mapping
+            let canvasFilter = 'none';
+            if (state.filter === 'filter-bw') canvasFilter = 'grayscale(100%) contrast(125%)';
+            if (state.filter === 'filter-sepia') canvasFilter = 'sepia(80%) hue-rotate(-30deg) saturate(140%)';
+            if (state.filter === 'filter-warm') canvasFilter = 'sepia(30%) saturate(140%) contrast(105%)';
+            if (state.filter === 'filter-cool') canvasFilter = 'saturate(90%) hue-rotate(20deg) contrast(110%)';
+            if (state.filter === 'filter-cyber') canvasFilter = 'saturate(200%) hue-rotate(140deg) contrast(120%)';
+
+            // Draw Images
+            for (let i = 0; i < photoCount; i++) {
+                const imgSrc = state.photos[i] || state.photos[state.photos.length - 1] || defaultPlaceholders[0];
+                const img = await loadImage(imgSrc);
+
+                let x = padding;
+                let y = padding;
+
+                if (is2x2) {
+                    x = padding + (i % 2) * (photoWidth + gap);
+                    y = padding + Math.floor(i / 2) * (photoHeight + gap);
+                } else {
+                    y = padding + i * (photoHeight + gap);
+                }
+
+                ctx.save();
+                ctx.filter = canvasFilter;
+                drawImageCover(ctx, img, x, y, photoWidth, photoHeight);
+                ctx.restore();
+            }
+
+            // Draw Footer Text
+            const footerY = totalHeight - 90;
+            ctx.fillStyle = state.textColor;
+            ctx.textAlign = 'center';
+
+            let fontName = 'sans-serif';
+            if (state.font === 'font-serif-custom') fontName = 'Playfair Display';
+            if (state.font === 'font-hand-custom') fontName = 'Caveat';
+            if (state.font === 'font-mono-custom') fontName = 'Space Mono';
+
+            await document.fonts.ready;
+
+            ctx.font = `900 22px "${fontName}", sans-serif`;
+            ctx.fillText((state.title || 'PHOTOBOOTH').toUpperCase(), width / 2, footerY);
+
+            ctx.font = `400 13px "${fontName}", monospace`;
+            ctx.fillText(state.date ? state.date.replace(/-/g, ' . ') : '', width / 2, footerY + 25);
+
+            // Trigger File Download
+            const link = document.createElement('a');
+            link.download = `photostrip-${Date.now()}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        // Helper: Image Cover Crop for Canvas
+        function drawImageCover(ctx, img, x, y, w, h) {
+            const imgAspect = img.width / img.height;
+            const targetAspect = w / h;
+            let sx, sy, sw, sh;
+
+            if (imgAspect > targetAspect) {
+                sh = img.height;
+                sw = sh * targetAspect;
+                sx = (img.width - sw) / 2;
+                sy = 0;
+            } else {
+                sw = img.width;
+                sh = sw / targetAspect;
+                sx = 0;
+                sy = (img.height - sh) / 2;
+            }
+            ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
+        }
+
+        // Helper: Async Load Image
+        function loadImage(src) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.onload = () => resolve(img);
+                img.src = src;
+            });
+        }
+    </script>
+</body>
+</html>
