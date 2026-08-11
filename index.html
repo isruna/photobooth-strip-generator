@@ -50,7 +50,7 @@
             outline: 3px dotted #cbd5e1;
             outline-offset: -2px;
             user-select: none;
-            touch-action: none; /* Prevents mobile scroll interference */
+            touch-action: none;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -179,10 +179,10 @@
                 <div class="space-y-2">
                     <label class="text-xs font-medium text-slate-400 uppercase tracking-wider">Strip Layout</label>
                     <div class="grid grid-cols-4 gap-1.5 text-xs">
-                        <button onclick="updateState('layout', '1-single')" class="py-2 px-2 rounded-lg bg-slate-800 text-slate-300 font-medium border border-slate-700">Single</button>
-                        <button onclick="updateState('layout', '3-vert')" class="py-2 px-2 rounded-lg bg-indigo-600 text-white font-medium border border-indigo-500">3-Photo</button>
-                        <button onclick="updateState('layout', '4-vert')" class="py-2 px-2 rounded-lg bg-slate-800 text-slate-300 font-medium border border-slate-700">4-Photo</button>
-                        <button onclick="updateState('layout', '2x2')" class="py-2 px-2 rounded-lg bg-slate-800 text-slate-300 font-medium border border-slate-700">2x2 Grid</button>
+                        <button onclick="updateState('layout', '1-single')" data-layout="1-single" class="py-2 px-2 rounded-lg">Single</button>
+                        <button onclick="updateState('layout', '3-vert')" data-layout="3-vert" class="py-2 px-2 rounded-lg">3-Photo</button>
+                        <button onclick="updateState('layout', '4-vert')" data-layout="4-vert" class="py-2 px-2 rounded-lg">4-Photo</button>
+                        <button onclick="updateState('layout', '2x2')" data-layout="2x2" class="py-2 px-2 rounded-lg">2x2 Grid</button>
                     </div>
                 </div>
 
@@ -190,10 +190,10 @@
                 <div class="space-y-2">
                     <label class="text-xs font-medium text-slate-400 uppercase tracking-wider">Photo Frame Shape</label>
                     <div class="grid grid-cols-4 gap-2 text-xs">
-                        <button onclick="updateState('frameShape', 'rect')" class="py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200">Square</button>
-                        <button onclick="updateState('frameShape', 'rounded')" class="py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200">Rounded</button>
-                        <button onclick="updateState('frameShape', 'arch')" class="py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200">Arch Curve</button>
-                        <button onclick="updateState('frameShape', 'pill')" class="py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200">Capsule</button>
+                        <button onclick="updateState('frameShape', 'rect')" data-shape="rect" class="py-2 rounded-lg">Square</button>
+                        <button onclick="updateState('frameShape', 'rounded')" data-shape="rounded" class="py-2 rounded-lg">Rounded</button>
+                        <button onclick="updateState('frameShape', 'arch')" data-shape="arch" class="py-2 rounded-lg">Arch Curve</button>
+                        <button onclick="updateState('frameShape', 'pill')" data-shape="pill" class="py-2 rounded-lg">Capsule</button>
                     </div>
                 </div>
 
@@ -201,11 +201,11 @@
                 <div class="space-y-2">
                     <label class="text-xs font-medium text-slate-400 uppercase tracking-wider">Frame Background Color</label>
                     <div class="flex flex-wrap gap-2.5 items-center">
-                        <button onclick="setTheme('#ffffff', '#09090b')" class="w-8 h-8 rounded-full bg-white border-2 border-indigo-500 ring-2 ring-indigo-500/30 transition-transform hover:scale-110" title="Classic White"></button>
-                        <button onclick="setTheme('#18181b', '#ffffff')" class="w-8 h-8 rounded-full bg-zinc-900 border border-slate-700 transition-transform hover:scale-110" title="Noir Black"></button>
-                        <button onclick="setTheme('#fbcfe8', '#831843')" class="w-8 h-8 rounded-full bg-pink-200 border border-slate-700 transition-transform hover:scale-110" title="Y2K Pink"></button>
-                        <button onclick="setTheme('#fef3c7', '#78350f')" class="w-8 h-8 rounded-full bg-amber-100 border border-slate-700 transition-transform hover:scale-110" title="Vintage Cream"></button>
-                        <button onclick="setTheme('#a5f3fc', '#164e63')" class="w-8 h-8 rounded-full bg-cyan-200 border border-slate-700 transition-transform hover:scale-110" title="Retro Cyan"></button>
+                        <button onclick="setTheme('#ffffff', '#09090b')" data-color="#ffffff" style="background-color: #ffffff;" class="w-8 h-8 rounded-full border cursor-pointer" title="Classic White"></button>
+                        <button onclick="setTheme('#18181b', '#ffffff')" data-color="#18181b" style="background-color: #18181b;" class="w-8 h-8 rounded-full border cursor-pointer" title="Noir Black"></button>
+                        <button onclick="setTheme('#fbcfe8', '#831843')" data-color="#fbcfe8" style="background-color: #fbcfe8;" class="w-8 h-8 rounded-full border cursor-pointer" title="Y2K Pink"></button>
+                        <button onclick="setTheme('#fef3c7', '#78350f')" data-color="#fef3c7" style="background-color: #fef3c7;" class="w-8 h-8 rounded-full border cursor-pointer" title="Vintage Cream"></button>
+                        <button onclick="setTheme('#a5f3fc', '#164e63')" data-color="#a5f3fc" style="background-color: #a5f3fc;" class="w-8 h-8 rounded-full border cursor-pointer" title="Retro Cyan"></button>
                         
                         <div class="h-6 w-px bg-slate-700 mx-1"></div>
                         
@@ -284,12 +284,12 @@
                 <div class="space-y-2">
                     <label class="text-xs font-medium text-slate-400 uppercase tracking-wider">Photo Filter</label>
                     <div class="grid grid-cols-3 gap-2 text-xs">
-                        <button onclick="updateState('filter', 'none')" class="py-2 rounded-lg bg-indigo-600 text-white font-medium text-center border border-indigo-500">Normal</button>
-                        <button onclick="updateState('filter', 'filter-bw')" class="py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200">B&W Noir</button>
-                        <button onclick="updateState('filter', 'filter-sepia')" class="py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200">Vintage</button>
-                        <button onclick="updateState('filter', 'filter-warm')" class="py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200">Warm</button>
-                        <button onclick="updateState('filter', 'filter-cool')" class="py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200">Cool Tone</button>
-                        <button onclick="updateState('filter', 'filter-cyber')" class="py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200">Cyberpunk</button>
+                        <button onclick="updateState('filter', 'none')" data-filter="none" class="py-2 rounded-lg">Normal</button>
+                        <button onclick="updateState('filter', 'filter-bw')" data-filter="filter-bw" class="py-2 rounded-lg">B&W Noir</button>
+                        <button onclick="updateState('filter', 'filter-sepia')" data-filter="filter-sepia" class="py-2 rounded-lg">Vintage</button>
+                        <button onclick="updateState('filter', 'filter-warm')" data-filter="filter-warm" class="py-2 rounded-lg">Warm</button>
+                        <button onclick="updateState('filter', 'filter-cool')" data-filter="filter-cool" class="py-2 rounded-lg">Cool Tone</button>
+                        <button onclick="updateState('filter', 'filter-cyber')" data-filter="filter-cyber" class="py-2 rounded-lg">Cyberpunk</button>
                     </div>
                 </div>
 
@@ -437,8 +437,8 @@
             photos: [...defaultPlaceholders],
             layout: '3-vert',           // Default: 3-Photo Vertical
             frameShape: 'rect',
-            bg: '#ffffff',
-            textColor: '#09090b',
+            bg: '#ffffff',              // Default Frame BG
+            textColor: '#09090b',       // Default Text Color
             filter: 'none',             // Default: Normal
             font: 'font-sans-custom',
             description: 'PHOTOBOOTH',  // Default: PHOTOBOOTH
@@ -547,7 +547,7 @@
             function onStart(e) {
                 isDragging = true;
                 if (e.type === 'touchstart') {
-                    e.preventDefault(); // Stop mobile scrolling while grabbing stamp
+                    e.preventDefault();
                 }
                 const clientX = e.touches ? e.touches[0].clientX : e.clientX;
                 const clientY = e.touches ? e.touches[0].clientY : e.clientY;
@@ -563,7 +563,7 @@
             function onMove(e) {
                 if (!isDragging) return;
                 if (e.type === 'touchmove') {
-                    e.preventDefault(); // Stop mobile scrolling while dragging stamp
+                    e.preventDefault();
                 }
                 const clientX = e.touches ? e.touches[0].clientX : e.clientX;
                 const clientY = e.touches ? e.touches[0].clientY : e.clientY;
@@ -691,7 +691,57 @@
             return 'rounded-sm';
         }
 
+        // Dynamically Highlight Active Selection Buttons
+        function updateActiveButtonUI() {
+            // Layout Buttons
+            document.querySelectorAll('[data-layout]').forEach(btn => {
+                const isActive = btn.getAttribute('data-layout') === state.layout;
+                btn.className = `py-2 px-2 rounded-lg font-medium text-xs transition-all ${
+                    isActive
+                        ? 'bg-indigo-600 text-white font-bold border-2 border-indigo-400 shadow-md shadow-indigo-600/30 scale-[1.02]'
+                        : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700'
+                }`;
+            });
+
+            // Frame Shape Buttons
+            document.querySelectorAll('[data-shape]').forEach(btn => {
+                const isActive = btn.getAttribute('data-shape') === state.frameShape;
+                btn.className = `py-2 rounded-lg font-medium text-xs transition-all ${
+                    isActive
+                        ? 'bg-indigo-600 text-white font-bold border-2 border-indigo-400 shadow-md shadow-indigo-600/30 scale-[1.02]'
+                        : 'bg-slate-700 hover:bg-slate-600 text-slate-200'
+                }`;
+            });
+
+            // Filter Buttons
+            document.querySelectorAll('[data-filter]').forEach(btn => {
+                const isActive = btn.getAttribute('data-filter') === state.filter;
+                btn.className = `py-2 rounded-lg font-medium text-xs transition-all ${
+                    isActive
+                        ? 'bg-indigo-600 text-white font-bold border-2 border-indigo-400 shadow-md shadow-indigo-600/30 scale-[1.02]'
+                        : 'bg-slate-700 hover:bg-slate-600 text-slate-200'
+                }`;
+            });
+
+            // Color Swatches (Preserves background color fill while toggling active glowing ring)
+            document.querySelectorAll('[data-color]').forEach(btn => {
+                const colorVal = btn.getAttribute('data-color');
+                const isActive = colorVal.toLowerCase() === state.bg.toLowerCase();
+                
+                btn.style.backgroundColor = colorVal;
+
+                if (isActive) {
+                    btn.className = "w-8 h-8 rounded-full border-2 border-indigo-400 ring-4 ring-indigo-500/50 scale-110 transition-transform cursor-pointer shadow-lg";
+                } else {
+                    btn.className = "w-8 h-8 rounded-full border border-slate-700 hover:scale-105 transition-transform cursor-pointer opacity-90";
+                }
+            });
+        }
+
         function renderAll() {
+            // Update Active UI Highlight States
+            updateActiveButtonUI();
+
             // Update Thumbnails
             thumbContainer.innerHTML = '';
             state.photos.forEach((src, idx) => {
