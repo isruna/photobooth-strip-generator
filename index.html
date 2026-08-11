@@ -38,6 +38,25 @@
             border-radius: 3px;
             box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.6);
         }
+
+        /* Authentic Scalloped Postage Stamp Styling */
+        .authentic-postage-stamp {
+            background-color: #fffdfa;
+            color: #1e293b;
+            width: 100px;
+            min-height: 50px;
+            border-radius: 2px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            outline: 3px dotted #cbd5e1;
+            outline-offset: -2px;
+            user-select: none;
+            touch-action: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+        }
     </style>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen font-sans flex flex-col">
@@ -119,7 +138,7 @@
 
                 <!-- Frame Color Selector -->
                 <div class="space-y-2">
-                    <label class="text-xs font-medium text-slate-400 uppercase tracking-wider">Frame Theme</label>
+                    <label class="text-xs font-medium text-slate-400 uppercase tracking-wider">Frame Background Color</label>
                     <div class="flex flex-wrap gap-2.5 items-center">
                         <button onclick="setTheme('#ffffff', '#09090b')" class="w-8 h-8 rounded-full bg-white border-2 border-indigo-500 ring-2 ring-indigo-500/30 transition-transform hover:scale-110" title="Classic White"></button>
                         <button onclick="setTheme('#18181b', '#ffffff')" class="w-8 h-8 rounded-full bg-zinc-900 border border-slate-700 transition-transform hover:scale-110" title="Noir Black"></button>
@@ -129,13 +148,64 @@
                         
                         <div class="h-6 w-px bg-slate-700 mx-1"></div>
                         
-                        <!-- Custom Color Picker -->
+                        <!-- Custom Background Color Picker -->
                         <label class="relative cursor-pointer">
                             <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center border border-slate-600 text-slate-300">
                                 <i data-lucide="pipette" class="w-4 h-4"></i>
                             </div>
-                            <input type="color" onchange="setTheme(this.value, '#000000')" class="absolute opacity-0 inset-0 w-full h-full cursor-pointer">
+                            <input type="color" onchange="updateState('bg', this.value)" class="absolute opacity-0 inset-0 w-full h-full cursor-pointer">
                         </label>
+                    </div>
+                </div>
+
+                <!-- Postage Stamp Sticker Controls -->
+                <div class="space-y-3 p-3 bg-slate-900/60 rounded-xl border border-slate-700/50">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold flex items-center gap-2 text-indigo-300">
+                            <i data-lucide="stamp" class="w-4 h-4 text-indigo-400"></i> Postage Stamp Controls
+                        </span>
+                        <input type="checkbox" id="stamp-toggle" checked onchange="updateState('showPostageStamp', this.checked)" class="w-4 h-4 accent-indigo-600 rounded cursor-pointer">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <!-- Stamp Text Input -->
+                        <div class="space-y-1">
+                            <span class="text-[11px] text-slate-400">Stamp Text</span>
+                            <input type="text" id="stamp-text-input" oninput="updateState('stampText', this.value)" value="adis & nana" placeholder="e.g. adis & nana" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-indigo-500">
+                        </div>
+
+                        <!-- Stamp Icon Selector -->
+                        <div class="space-y-1">
+                            <span class="text-[11px] text-slate-400">Stamp Icon Tag</span>
+                            <select onchange="updateState('stampIcon', this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
+                                <option value="♥ LOVE">♥ LOVE</option>
+                                <option value="★ STAR">★ STAR</option>
+                                <option value="☀ SUN">☀ SUN</option>
+                                <option value="🌸 FLOWER">🌸 FLOWER</option>
+                                <option value="⚡ SPARK">⚡ SPARK</option>
+                                <option value="☕ COFFEE">☕ COFFEE</option>
+                                <option value="NONE">NO ICON</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Rotate & Scale Sliders -->
+                    <div class="grid grid-cols-2 gap-3 pt-1">
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-[10px] text-slate-400">
+                                <span>Rotate</span>
+                                <span id="angle-val">-30°</span>
+                            </div>
+                            <input type="range" min="-180" max="180" value="-30" oninput="updateState('stampRotation', parseInt(this.value))" class="w-full accent-indigo-500 h-1.5 bg-slate-700 rounded cursor-pointer">
+                        </div>
+
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-[10px] text-slate-400">
+                                <span>Scale Size</span>
+                                <span id="scale-val">1.0x</span>
+                            </div>
+                            <input type="range" min="0.5" max="2.0" step="0.05" value="1.0" oninput="updateState('stampScale', parseFloat(this.value))" class="w-full accent-indigo-500 h-1.5 bg-slate-700 rounded cursor-pointer">
+                        </div>
                     </div>
                 </div>
 
@@ -162,9 +232,11 @@
                     </div>
                 </div>
 
-                <!-- Footer Text & Font Options -->
-                <div class="space-y-3 pt-2">
-                    <label class="text-xs font-medium text-slate-400 uppercase tracking-wider">Footer Customization</label>
+                <!-- Frame Description, Font Sizes & Text Color -->
+                <div class="space-y-3 p-3 bg-slate-900/60 rounded-xl border border-slate-700/50">
+                    <label class="text-xs font-semibold text-indigo-300 uppercase tracking-wider flex items-center gap-2">
+                        <i data-lucide="type" class="w-4 h-4 text-indigo-400"></i> Typography & Text Customization
+                    </label>
                     
                     <div class="grid grid-cols-2 gap-2">
                         <select onchange="updateState('font', this.value)" class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-indigo-500 text-slate-200">
@@ -174,17 +246,49 @@
                             <option value="font-mono-custom">Monospace (Digital)</option>
                         </select>
                         
-                        <input type="date" id="date-input" onchange="updateState('date', this.value)" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-xs text-slate-300 focus:outline-none focus:border-indigo-500">
+                        <!-- Text Color Picker -->
+                        <div class="flex items-center gap-2 bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5">
+                            <input type="color" id="text-color-input" value="#09090b" onchange="updateState('textColor', this.value)" class="w-5 h-5 rounded cursor-pointer bg-transparent border-0">
+                            <span class="text-xs text-slate-300 font-medium">Text Color</span>
+                        </div>
                     </div>
 
-                    <input type="text" id="title-input" oninput="updateState('title', this.value)" placeholder="Custom Title..." value="PHOTOBOOTH" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-indigo-500">
-                    
+                    <!-- Free Text Input for Frame Description -->
+                    <div class="space-y-1">
+                        <span class="text-[11px] text-slate-400">Frame Description Text</span>
+                        <input type="text" id="desc-input" oninput="updateState('description', this.value)" placeholder="e.g. PHOTOBOOTH, VACATION..." value="SEA" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-indigo-500">
+                    </div>
+
+                    <!-- Date Input -->
+                    <div class="space-y-1">
+                        <span class="text-[11px] text-slate-400">Date</span>
+                        <input type="date" id="date-input" onchange="updateState('date', this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-indigo-500">
+                    </div>
+
+                    <!-- Font Size Sliders -->
+                    <div class="grid grid-cols-2 gap-3 pt-1">
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-[10px] text-slate-400">
+                                <span>Description Size</span>
+                                <span id="desc-size-val">12px</span>
+                            </div>
+                            <input type="range" min="12" max="36" value="12" oninput="updateState('descFontSize', parseInt(this.value))" class="w-full accent-indigo-500 h-1.5 bg-slate-700 rounded cursor-pointer">
+                        </div>
+
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-[10px] text-slate-400">
+                                <span>Date Size</span>
+                                <span id="date-size-val">10px</span>
+                            </div>
+                            <input type="range" min="9" max="22" value="10" oninput="updateState('dateFontSize', parseInt(this.value))" class="w-full accent-indigo-500 h-1.5 bg-slate-700 rounded cursor-pointer">
+                        </div>
+                    </div>
+
+                    <p class="text-[10px] text-slate-500 pt-1">Output Filename: <span id="filename-preview" class="font-mono text-indigo-400">SEA_20260808.png</span></p>
+
                     <div class="flex gap-4 text-xs pt-1">
                         <label class="flex items-center gap-1.5 cursor-pointer">
-                            <input type="checkbox" checked onchange="updateState('showBarcode', this.checked)" class="accent-indigo-600 rounded"> Barcode
-                        </label>
-                        <label class="flex items-center gap-1.5 cursor-pointer">
-                            <input type="checkbox" checked onchange="updateState('showHeart', this.checked)" class="accent-indigo-600 rounded"> Heart Stamp
+                            <input type="checkbox" id="barcode-toggle" onchange="updateState('showBarcode', this.checked)" class="accent-indigo-600 rounded"> Barcode Graphic
                         </label>
                     </div>
                 </div>
@@ -200,29 +304,39 @@
         <!-- RIGHT COLUMN: Live Interactive Canvas Preview -->
         <section class="lg:col-span-7 bg-slate-950 border border-slate-800 rounded-2xl p-6 flex flex-col items-center justify-center min-h-[600px] relative overflow-hidden">
             <div class="absolute top-4 left-4 text-xs font-medium text-slate-500 uppercase tracking-wider flex items-center gap-1.5 z-10">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Live Interactive Preview
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Live Preview (Drag stamp anywhere!)
             </div>
 
             <!-- Photobooth Outer Strip Wrapper -->
-            <div id="photostrip-wrapper" class="flex items-stretch photostrip-shadow rounded overflow-hidden">
+            <div id="photostrip-wrapper" class="flex items-stretch photostrip-shadow rounded overflow-hidden relative">
                 
                 <!-- Sprocket Left Rail -->
                 <div id="sprockets-left" class="hidden bg-black px-2 py-4 flex flex-col justify-between items-center border-r border-slate-800"></div>
 
                 <!-- Main Photobooth Body -->
-                <div id="photostrip-preview" class="bg-white text-zinc-900 p-4 flex flex-col gap-3 w-[230px] transition-all font-sans-custom">
+                <div id="photostrip-preview" class="bg-white text-zinc-900 p-4 flex flex-col gap-3 w-[230px] transition-all font-sans-custom relative">
+                    
+                    <!-- Photos Container -->
                     <div id="frames-container" class="flex flex-col gap-3"></div>
 
-                    <!-- Strip Footer -->
-                    <div class="pt-2 pb-1 text-center flex flex-col items-center justify-center gap-1">
-                        <div class="flex items-center gap-1.5">
-                            <i id="stamp-icon" data-lucide="heart" class="w-3 h-3 fill-current text-rose-500"></i>
-                            <p id="preview-title" class="font-black text-xs tracking-widest uppercase">PHOTOBOOTH</p>
+                    <!-- Draggable, Rotatable & Resizable Postage Stamp Sticker -->
+                    <div id="draggable-stamp" class="absolute z-30 cursor-grab active:cursor-grabbing" style="top: 75%; left: 15%;">
+                        <div class="authentic-postage-stamp">
+                            <div id="stamp-icon-badge" class="flex items-center gap-1 text-[9px] font-bold text-rose-500 border-b border-slate-300 pb-0.5 mb-0.5 w-full justify-center">
+                                <span id="stamp-icon-text">♥ LOVE</span>
+                            </div>
+                            <span id="stamp-display-text" class="font-serif font-bold text-[11px] leading-tight text-slate-800 whitespace-nowrap">adis & nana</span>
                         </div>
-                        <p id="preview-date" class="text-[10px] opacity-75 font-medium tracking-wider"></p>
+                    </div>
+
+                    <!-- Strip Footer -->
+                    <div class="pt-2 pb-1 text-center flex flex-col items-center justify-center gap-1 relative">
+                        <!-- Free Custom Description Text -->
+                        <p id="preview-description" class="font-bold tracking-widest uppercase">SEA</p>
+                        <p id="preview-date" class="font-medium tracking-wider opacity-90"></p>
 
                         <!-- Barcode Graphic -->
-                        <div id="preview-barcode" class="pt-1 opacity-80 flex gap-0.5 justify-center h-4 items-end">
+                        <div id="preview-barcode" class="pt-1 flex gap-0.5 justify-center h-4 items-end hidden">
                             <div class="w-0.5 h-full bg-current"></div>
                             <div class="w-1 h-full bg-current"></div>
                             <div class="w-0.5 h-full bg-current"></div>
@@ -252,17 +366,25 @@
 
         const state = {
             photos: [...defaultPlaceholders],
-            layout: '3-vert',
-            frameShape: 'rect', // rect, rounded, arch, pill
+            layout: '1-single',
+            frameShape: 'rect',
             bg: '#ffffff',
             textColor: '#09090b',
-            filter: 'none',
+            filter: 'filter-bw',
             font: 'font-sans-custom',
-            title: 'PHOTOBOOTH',
+            description: 'SEA',         // Free text for frame and filename
+            descFontSize: 12,           // Description Font Size in px
+            dateFontSize: 10,           // Date Font Size in px
+            stampText: 'adis & nana',   // Editable text on postage stamp
+            stampIcon: '♥ LOVE',        // Selectable Stamp Icon Tag
+            showPostageStamp: true,
+            stampRotation: -30,         // Rotation angle in degrees
+            stampScale: 1.0,            // Scale size factor
+            stampCenterRatioX: 0.28,    // Normalized center X
+            stampCenterRatioY: 0.82,    // Normalized center Y
             date: '2026-08-08',
             sprockets: false,
-            showBarcode: true,
-            showHeart: true
+            showBarcode: false
         };
 
         const dropzone = document.getElementById('dropzone');
@@ -271,18 +393,78 @@
         const photoCount = document.getElementById('photo-count');
         const previewStrip = document.getElementById('photostrip-preview');
         const framesContainer = document.getElementById('frames-container');
-        const previewTitle = document.getElementById('preview-title');
+        const previewDescription = document.getElementById('preview-description');
         const previewDate = document.getElementById('preview-date');
         const previewBarcode = document.getElementById('preview-barcode');
-        const stampIcon = document.getElementById('stamp-icon');
+        const draggableStamp = document.getElementById('draggable-stamp');
+        const stampDisplayText = document.getElementById('stamp-display-text');
+        const stampIconBadge = document.getElementById('stamp-icon-badge');
+        const stampIconText = document.getElementById('stamp-icon-text');
         const sprocketsLeft = document.getElementById('sprockets-left');
         const sprocketsRight = document.getElementById('sprockets-right');
+        const filenamePreview = document.getElementById('filename-preview');
 
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('date-input').value = state.date;
+            setupStampDragEvents();
             renderAll();
             lucide.createIcons();
         });
+
+        // Setup Drag & Drop with 1:1 Precise Center-Anchor Math
+        function setupStampDragEvents() {
+            let isDragging = false;
+            let startX, startY, initialLeft, initialTop;
+
+            function onStart(e) {
+                isDragging = true;
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                startX = clientX;
+                startY = clientY;
+
+                const parentRect = previewStrip.getBoundingClientRect();
+                const stampRect = draggableStamp.getBoundingClientRect();
+                initialLeft = stampRect.left - parentRect.left;
+                initialTop = stampRect.top - parentRect.top;
+            }
+
+            function onMove(e) {
+                if (!isDragging) return;
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                
+                const dx = clientX - startX;
+                const dy = clientY - startY;
+
+                const parentRect = previewStrip.getBoundingClientRect();
+                let newLeft = initialLeft + dx;
+                let newTop = initialTop + dy;
+
+                draggableStamp.style.left = `${newLeft}px`;
+                draggableStamp.style.top = `${newTop}px`;
+
+                // Calculate center point ratios relative to previewStrip
+                const centerX = newLeft + (draggableStamp.offsetWidth / 2);
+                const centerY = newTop + (draggableStamp.offsetHeight / 2);
+
+                state.stampCenterRatioX = centerX / parentRect.width;
+                state.stampCenterRatioY = centerY / parentRect.height;
+            }
+
+            function onEnd() {
+                isDragging = false;
+            }
+
+            draggableStamp.addEventListener('mousedown', onStart);
+            draggableStamp.addEventListener('touchstart', onStart, { passive: true });
+
+            document.addEventListener('mousemove', onMove);
+            document.addEventListener('touchmove', onMove, { passive: true });
+
+            document.addEventListener('mouseup', onEnd);
+            document.addEventListener('touchend', onEnd);
+        }
 
         dropzone.addEventListener('click', () => photoInput.click());
         photoInput.addEventListener('change', handleFileSelect);
@@ -358,21 +540,21 @@
         }
 
         function generateFilename() {
-            const cleanTitle = (state.title || 'PHOTOBOOTH')
+            const cleanDesc = (state.description || 'PHOTOBOOTH')
                 .trim()
                 .replace(/[^a-zA-Z0-9]/g, '_')
+                .replace(/_+/g, '_')
                 .toUpperCase();
-            
+
             const cleanDate = state.date ? state.date.replace(/-/g, '') : '20260808';
-            return `${cleanTitle}_${cleanDate}.png`;
+            return `${cleanDesc}_${cleanDate}.png`;
         }
 
-        // Helper for Photo Frame Shape Classes in Preview
         function getShapeClass(shape) {
             if (shape === 'rounded') return 'rounded-2xl';
             if (shape === 'arch') return 'rounded-t-full rounded-b-sm';
             if (shape === 'pill') return 'rounded-full';
-            return 'rounded-sm'; // Default rect
+            return 'rounded-sm';
         }
 
         function renderAll() {
@@ -423,17 +605,56 @@
                 framesContainer.appendChild(frame);
             }
 
-            // Colors & Fonts
+            // Colors, Fonts & Sizes
             previewStrip.style.background = state.bg;
             previewStrip.style.color = state.textColor;
-            previewStrip.className = `p-4 flex flex-col gap-3 transition-all ${state.font}`;
+            previewStrip.className = `p-4 flex flex-col gap-3 transition-all ${state.font} relative`;
 
-            // Footer Text & Formatted Date
-            previewTitle.innerText = state.title || 'PHOTOBOOTH';
+            // Free Description Text & Date Formatting & Custom Font Sizes
+            previewDescription.innerText = state.description || 'PHOTOBOOTH';
+            previewDescription.style.fontSize = `${state.descFontSize}px`;
+            previewDescription.style.color = state.textColor;
+
             previewDate.innerText = formatDateDisplay(state.date);
+            previewDate.style.fontSize = `${state.dateFontSize}px`;
+            previewDate.style.color = state.textColor;
             
             previewBarcode.style.display = state.showBarcode ? 'flex' : 'none';
-            stampIcon.style.display = state.showHeart ? 'inline-block' : 'none';
+            previewBarcode.style.color = state.textColor;
+
+            // Postage Stamp Text, Icon, Rotation, and Scale Transformations
+            draggableStamp.style.display = state.showPostageStamp ? 'block' : 'none';
+            stampDisplayText.innerText = state.stampText || 'adis & nana';
+            draggableStamp.style.transform = `rotate(${state.stampRotation}deg) scale(${state.stampScale})`;
+
+            if (state.stampIcon && state.stampIcon !== 'NONE') {
+                stampIconBadge.style.display = 'flex';
+                stampIconText.innerText = state.stampIcon;
+            } else {
+                stampIconBadge.style.display = 'none';
+            }
+
+            // Position Stamp based on state center ratios
+            const pWidth = previewStrip.offsetWidth || 230;
+            const pHeight = previewStrip.offsetHeight || 300;
+            const sWidth = draggableStamp.offsetWidth || 100;
+            const sHeight = draggableStamp.offsetHeight || 50;
+
+            const targetLeft = (state.stampCenterRatioX * pWidth) - (sWidth / 2);
+            const targetTop = (state.stampCenterRatioY * pHeight) - (sHeight / 2);
+
+            draggableStamp.style.left = `${targetLeft}px`;
+            draggableStamp.style.top = `${targetTop}px`;
+
+            // Slider indicators
+            document.getElementById('angle-val').innerText = `${state.stampRotation}°`;
+            document.getElementById('scale-val').innerText = `${state.stampScale}x`;
+            document.getElementById('desc-size-val').innerText = `${state.descFontSize}px`;
+            document.getElementById('date-size-val').innerText = `${state.dateFontSize}px`;
+            document.getElementById('text-color-input').value = state.textColor;
+
+            // Filename Preview Text
+            filenamePreview.innerText = generateFilename();
 
             // Render Sprocket Holes
             if (state.sprockets) {
@@ -459,7 +680,6 @@
             lucide.createIcons();
         }
 
-        // Path Clipping Helper for Canvas Shapes
         function applyCanvasShapePath(ctx, x, y, w, h, shape) {
             ctx.beginPath();
             if (shape === 'rounded') {
@@ -477,15 +697,91 @@
                 const r = Math.min(w, h) / 2;
                 ctx.roundRect(x, y, w, h, r);
             } else {
-                // Rect
                 ctx.rect(x, y, w, h);
             }
             ctx.clip();
         }
 
-        // High-Res Canvas Exporter Engine
+        // Draw Editable, Rotated & Scaled Perforated Postage Stamp on Canvas
+        function drawPostageStampOnCanvas(ctx, centerX, centerY, previewToCanvasRatio) {
+            ctx.save();
+            ctx.translate(centerX, centerY);
+
+            // Apply Rotation & Combined Scale
+            ctx.rotate((state.stampRotation * Math.PI) / 180);
+            
+            const totalScale = state.stampScale * previewToCanvasRatio;
+            ctx.scale(totalScale, totalScale);
+
+            const stampW = 100;
+            const stampH = 50;
+
+            // Stamp Base Sticker Fill
+            ctx.fillStyle = '#fffdfa';
+            ctx.shadowColor = 'rgba(0,0,0,0.25)';
+            ctx.shadowBlur = 8;
+            ctx.shadowOffsetY = 3;
+            ctx.fillRect(-stampW / 2, -stampH / 2, stampW, stampH);
+            ctx.shadowColor = 'transparent';
+
+            // Dotted Perforated Edges
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([3, 3]);
+            ctx.strokeRect(-stampW / 2 + 2, -stampH / 2 + 2, stampW - 4, stampH - 4);
+            ctx.setLineDash([]);
+
+            let textOffsetY = 37;
+
+            // Draw Selected Stamp Icon Tag
+            if (state.stampIcon && state.stampIcon !== 'NONE') {
+                ctx.fillStyle = '#f43f5e';
+                ctx.font = 'bold 9px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(state.stampIcon, 0, -stampH / 2 + 14);
+
+                ctx.strokeStyle = '#cbd5e1';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(-stampW / 2 + 10, -stampH / 2 + 18);
+                ctx.lineTo(stampW / 2 - 10, -stampH / 2 + 18);
+                ctx.stroke();
+            } else {
+                textOffsetY = 28;
+            }
+
+            // Stamp Main Text (adis & nana)
+            ctx.fillStyle = '#1e293b';
+            ctx.font = 'bold 12px "Playfair Display", serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(state.stampText || 'adis & nana', 0, -stampH / 2 + textOffsetY);
+
+            ctx.restore();
+        }
+
+        // Draw Barcode Lines on Export Canvas
+        function drawBarcodeOnCanvas(ctx, totalWidth, footerY) {
+            const barcodeY = footerY + 38;
+            const barHeights = 16;
+            const barWidths = [2, 4, 2, 6, 2, 4, 2, 8, 3, 2, 5, 2, 4];
+            let barX = (totalWidth - 52) / 2;
+
+            ctx.save();
+            ctx.fillStyle = state.textColor;
+            ctx.globalAlpha = 0.8;
+
+            for (let i = 0; i < barWidths.length; i++) {
+                if (i % 2 === 0) {
+                    ctx.fillRect(barX, barcodeY, barWidths[i], barHeights);
+                }
+                barX += barWidths[i] + 1.5;
+            }
+            ctx.restore();
+        }
+
+        // High-Res Canvas Exporter Engine with Pixel-Perfect Preview Parity
         async function downloadStrip() {
-            const scale = 3;
+            const scale = 3; // 3x HD Render
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
 
@@ -506,9 +802,9 @@
 
             let totalHeight = padding;
             if (is2x2) {
-                totalHeight += (photoHeight * 2) + gap + 150;
+                totalHeight += (photoHeight * 2) + gap + 180;
             } else {
-                totalHeight += (photoHeight * photoCount) + (gap * (photoCount - 1)) + 150;
+                totalHeight += (photoHeight * photoCount) + (gap * (photoCount - 1)) + 180;
             }
 
             canvas.width = totalWidth * scale;
@@ -525,7 +821,6 @@
                 ctx.fillRect(0, 0, sprocketWidth, totalHeight);
                 ctx.fillRect(totalWidth - sprocketWidth, 0, sprocketWidth, totalHeight);
 
-                // Cutouts
                 ctx.fillStyle = '#f8fafc';
                 const holeW = 12;
                 const holeH = 18;
@@ -566,7 +861,7 @@
                 ctx.restore();
             }
 
-            // Draw Footer Text
+            // Draw Footer Free Description & Date
             const footerY = totalHeight - 90;
             ctx.fillStyle = state.textColor;
             ctx.textAlign = 'center';
@@ -578,13 +873,31 @@
 
             await document.fonts.ready;
 
-            ctx.font = `900 22px "${fontName}", sans-serif`;
-            ctx.fillText((state.title || 'PHOTOBOOTH').toUpperCase(), totalWidth / 2, footerY);
+            // Draw Free Description with Custom Font Size
+            ctx.font = `900 ${state.descFontSize * 1.8}px "${fontName}", sans-serif`;
+            ctx.fillText((state.description || 'PHOTOBOOTH').toUpperCase(), totalWidth / 2, footerY);
 
-            ctx.font = `500 13px "${fontName}", monospace`;
-            ctx.fillText(formatDateDisplay(state.date), totalWidth / 2, footerY + 25);
+            // Draw Date with Custom Font Size
+            ctx.font = `500 ${state.dateFontSize * 1.5}px "${fontName}", monospace`;
+            ctx.fillText(formatDateDisplay(state.date), totalWidth / 2, footerY + (state.descFontSize) + 12);
 
-            // Download Link
+            // Draw Barcode Graphic on Canvas if enabled
+            if (state.showBarcode) {
+                drawBarcodeOnCanvas(ctx, totalWidth, footerY);
+            }
+
+            // Draw Postage Stamp Sticker on Canvas with 1:1 Parity Calculation
+            if (state.showPostageStamp) {
+                const previewWidth = previewStrip.offsetWidth || 230;
+                const previewToCanvasRatio = contentWidth / previewWidth;
+
+                const canvasStampCenterX = sprocketWidth + (state.stampCenterRatioX * contentWidth);
+                const canvasStampCenterY = state.stampCenterRatioY * totalHeight;
+
+                drawPostageStampOnCanvas(ctx, canvasStampCenterX, canvasStampCenterY, previewToCanvasRatio);
+            }
+
+            // Download Link with Filename: DESCRIPTION_DATE.png
             const link = document.createElement('a');
             link.download = generateFilename();
             link.href = canvas.toDataURL('image/png');
